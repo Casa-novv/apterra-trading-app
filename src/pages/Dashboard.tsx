@@ -38,7 +38,7 @@ import {
   selectActiveSignals,
   selectSignalStats,
   selectHighConfidenceSignals,
-  selectTodaysSignals,
+  selectTodaysSignals
  } from '../store/slices/signalSlice';
 import {
   fetchMarketData,
@@ -124,9 +124,9 @@ const Dashboard: React.FC = () => {
       dailyPnLPercentage: portfolioSummary?.dailyPnLPercentage || 0,
       totalPnL: portfolioSummary?.totalPnL || 0,
       totalPnLPercentage: portfolioSummary?.totalPnLPercentage || 0,
-      activePositions: Array.isArray(portfolioSummary?.activePositions)
-        ? portfolioSummary.activePositions.length
-        : (portfolioSummary?.activePositions || 0),
+      activePositions:
+        portfolioSummary?.activePositions && Array.isArray(portfolioSummary.activePositions)
+        ? portfolioSummary.activePositions.length: 0,
       todayTrades: recentTrades?.filter(trade => {
         const today = new Date().toDateString();
         return new Date(trade.executedAt).toDateString() === today;

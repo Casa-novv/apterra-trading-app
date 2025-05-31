@@ -34,7 +34,7 @@ import {
   StarBorder,
 } from '@mui/icons-material';
 import { useAppSelector, useAppDispatch } from '../hooks/redux';
-import fetchSignals from '../store/slices/signalSlice';
+import { fetchSignals } from '../store/slices/signalSlice';
 
 const Signals: React.FC = () => {
   const dispatch = useAppDispatch();
