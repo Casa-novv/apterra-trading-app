@@ -1,23 +1,24 @@
+// Material-UI prefers spacing as numbers rather than rem strings
 export const spacing = {
-  0: '0px',
-  1: '0.25rem',   // 4px
-  2: '0.5rem',    // 8px
-  3: '0.75rem',   // 12px
-  4: '1rem',      // 16px
-  5: '1.25rem',   // 20px
-  6: '1.5rem',    // 24px
-  8: '2rem',      // 32px
-  10: '2.5rem',   // 40px
-  12: '3rem',     // 48px
-  16: '4rem',     // 64px
-  20: '5rem',     // 80px
-  24: '6rem',     // 96px
-  32: '8rem',     // 128px
-  40: '10rem',    // 160px
-  48: '12rem',    // 192px
-  56: '14rem',    // 224px
-  64: '16rem',    // 256px
+  0: 0,
+  1: 4,   // 0.25rem
+  2: 8,   // 0.5rem
+  3: 12,  // 0.75rem
+  4: 16,  // 1rem
+  5: 20,  // 1.25rem
+  6: 24,  // 1.5rem
+  8: 32,  // 2rem
+  10: 40, // 2.5rem
+  12: 48, // 3rem
+  16: 64, // 4rem
+  20: 80, // 5rem
+  24: 96, // 6rem
+  32: 128, // 8rem
+  40: 160, // 10rem
+  48: 192, // 12rem
+  56: 224, // 14rem
+  64: 256, // 16rem
 } as const;
 
 export type Spacing = typeof spacing;
-export {}
+export default spacing;

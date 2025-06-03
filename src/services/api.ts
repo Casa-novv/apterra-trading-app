@@ -9,7 +9,7 @@ const apiClient = axios.create({
   timeout: 10000,
 });
 
-// Request interceptor to add auth token
+// Request interceptor to attach an auth token to every request, if it exists
 apiClient.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -18,11 +18,21 @@ apiClient.interceptors.request.use((config) => {
   return config;
 });
 
-// Response interceptor for error handling
+// Response interceptor for error handling that prevents redirect loops
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const currentPath = window.location.pathname;
+    // Capture the called URL (if available)
+    const errorUrl = error.config?.url || '';
+    
+    // If a 401 error occurs, and we're not already on the login page,
+    // and the failing URL is not the verify endpoint, then clear the token and redirect.
+    if (
+      error.response?.status === 401 &&
+      currentPath !== '/login' &&
+      !errorUrl.includes('/auth/verify')
+    ) {
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
@@ -30,6 +40,7 @@ apiClient.interceptors.response.use(
   }
 );
 
+// Authentication API methods
 export const authAPI = {
   login: async (credentials: { email: string; password: string }) => {
     const response = await apiClient.post('/auth/login', credentials);
@@ -52,6 +63,7 @@ export const authAPI = {
   },
 };
 
+// Other API methods remain unchanged...
 export const signalsAPI = {
   getSignals: async (): Promise<TradingSignal[]> => {
     const response = await apiClient.get(API_CONFIG.ENDPOINTS.SIGNALS);
@@ -123,8 +135,6 @@ export const portfolioAPI = {
   
   getPortfolioPerformance: async (): Promise<number> => {
     // TODO: Replace with actual API call
-    // Example: const response = await fetch('/api/portfolio/performance');
-    // return await response.json();
     return 0; // placeholder
   },
 };
@@ -201,3 +211,5 @@ export const externalAPI = {
     }
   },
 };
+
+export default apiClient;

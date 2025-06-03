@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from './redux';
+import { addSignal, updateSignal } from '../store/slices/signalSlice';
 
 export interface WebSocketMessage {
   type: string;
@@ -227,7 +228,14 @@ const useWebSocket = (options: UseWebSocketOptions = {}): UseWebSocketReturn => 
         }
       };
 
-      newSocket.onmessage = handleMessage;
+      newSocket.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        if (data.type === 'new_signal') {
+          dispatch(addSignal(data.signal));
+        } else if (data.type === 'update_signal') {
+          dispatch(updateSignal(data.signal));
+        }
+      };
 
       setSocket(newSocket);
     } catch (err) {
@@ -235,7 +243,7 @@ const useWebSocket = (options: UseWebSocketOptions = {}): UseWebSocketReturn => 
       setError('Failed to create connection');
       setIsConnecting(false);
     }
-  }, [url, token, socket, isConnecting, reconnectAttempts, reconnectInterval, startHeartbeat, stopHeartbeat, handleMessage, onOpen, onClose, onError]);
+  }, [url, token, socket, isConnecting, reconnectAttempts, reconnectInterval, startHeartbeat, stopHeartbeat, handleMessage, onOpen, onClose, onError, dispatch]);
 
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {

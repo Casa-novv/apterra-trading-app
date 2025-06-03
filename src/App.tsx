@@ -1,11 +1,12 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline, Box } from '@mui/material';
+import { CssBaseline, Box, Button } from '@mui/material';
 import { Provider } from 'react-redux';
 import { store } from './store';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
-import theme from './theme/index';
+import theme from './theme';
+import './chartConfig';
 
 // Components
 import Navbar from './components/Layout/Navbar';
@@ -23,26 +24,44 @@ import Settings from './pages/Settings';
 // Auth actions
 import { checkAuthStatus } from './store/slices/authSlice';
 
+// WebSocket connection
+const ws = new WebSocket('ws://localhost:5000');
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  console.log(data);
+};
+
+// 🔹 Authentication Wrapper Components
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAppSelector((state) => state.auth);
-  
+
   if (loading) {
     return <LoadingSpinner />;
   }
-  
-  return isAuthenticated ? <>{children}</> : <Navigate to="/login" replace />;
+
+  return isAuthenticated ? (
+    <>{children}</>
+  ) : (
+    <Box sx={{ textAlign: 'center', mt: 4 }}>
+      <p>You need to log in to access this page.</p>
+      <Button variant="contained" color="primary" href="/login">
+        Go to Login
+      </Button>
+    </Box>
+  );
 };
 
 const PublicRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { isAuthenticated, loading } = useAppSelector((state) => state.auth);
-  
+
   if (loading) {
     return <LoadingSpinner />;
   }
-  
+
   return !isAuthenticated ? <>{children}</> : <Navigate to="/dashboard" replace />;
 };
 
+// 🔹 Main Content Component
 const AppContent: React.FC = () => {
   const dispatch = useAppDispatch();
   const { loading } = useAppSelector((state) => state.auth);
@@ -51,15 +70,13 @@ const AppContent: React.FC = () => {
     dispatch(checkAuthStatus());
   }, [dispatch]);
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
-
-  return (
-    <Box 
-      sx={{ 
+  return loading ? (
+    <LoadingSpinner />
+  ) : (
+    <Box
+      sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #0f0f23 0%, #1a1a2e 50%, #16213e 100%)',
+        bgcolor: theme.palette.background.default,
         display: 'flex',
         flexDirection: 'column',
       }}
@@ -68,59 +85,16 @@ const AppContent: React.FC = () => {
       <Box component="main" sx={{ flexGrow: 1, pt: { xs: 7, sm: 8 } }}>
         <Routes>
           {/* Public Routes */}
-          <Route path="/" element={<Dashboard />} />
-          <Route 
-            path="/login" 
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            } 
-          />
-          <Route 
-            path="/register" 
-            element={
-              <PublicRoute>
-                <Register />
-              </PublicRoute>
-            } 
-          />
-          
+          <Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
+          <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+
           {/* Protected Routes */}
-          <Route 
-            path="/dashboard" 
-            element={
-              <ProtectedRoute>
-                <Dashboard />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/signals" 
-            element={
-              <ProtectedRoute>
-                <Signals />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/portfolio" 
-            element={
-              <ProtectedRoute>
-                <Portfolio />
-              </ProtectedRoute>
-            } 
-          />
-          <Route 
-            path="/settings" 
-            element={
-              <ProtectedRoute>
-                <Settings />
-              </ProtectedRoute>
-            } 
-          />
-          
-          {/* Catch all route */}
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/signals" element={<ProtectedRoute><Signals /></ProtectedRoute>} />
+          <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
+          <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
+
+          {/* Catch-all route */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </Box>
@@ -129,6 +103,7 @@ const AppContent: React.FC = () => {
   );
 };
 
+// 🔹 App Root Wrapper
 const App: React.FC = () => {
   return (
     <Provider store={store}>

@@ -1,64 +1,50 @@
+import { createTheme } from '@mui/material/styles';
 import { colors } from './colors';
 import { typography } from './typography';
 import { spacing } from './spacing';
 
-export interface Theme {
-  colors: typeof colors;
-  typography: typeof typography;
-  spacing: typeof spacing;
-  breakpoints: {
-    mobile: string;
-    tablet: string;
-    desktop: string;
-    wide: string;
-  };
-  shadows: {
-    small: string;
-    medium: string;
-    large: string;
-  };
-  borderRadius: {
-    small: string;
-    medium: string;
-    large: string;
-    full: string;
-  };
-  zIndex: {
-    dropdown: number;
-    modal: number;
-    tooltip: number;
-    overlay: number;
-  };
-}
-
-export const theme: Theme = {
-  colors,
-  typography,
-  spacing,
-  breakpoints: {
-    mobile: '480px',
-    tablet: '768px',
-    desktop: '1024px',
-    wide: '1200px',
+export const theme = createTheme({
+  palette: {
+    background: {
+      default: colors.background?.default ?? '#ffffff',  // 🔹 Ensures values exist
+      paper: colors.background?.paper ?? '#f3f4f6',
+    },
   },
-  shadows: {
-    small: '0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24)',
-    medium: '0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23)',
-    large: '0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23)',
+  typography: {
+    ...typography,
+    fontFamily: typeof typography.fontFamily === 'string'
+      ? typography.fontFamily
+      : 'Inter, system-ui, sans-serif',
+    fontSize: typeof typography.fontSize === 'number' ? typography.fontSize : 16, // 🔹 Ensures number format
   },
-  borderRadius: {
-    small: '4px',
-    medium: '8px',
-    large: '12px',
-    full: '50%',
+  spacing: (factor: number) => {
+    const key = factor as keyof typeof spacing;
+    return typeof spacing[key] === 'number' ? spacing[key] : factor * 8;
+  }, // 🔹 Ensures correct spacing format
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 480,
+      md: 768,
+      lg: 1024,
+      xl: 1200,
+    },
+  },
+  shadows: [
+    "none",
+    ...Array.from({ length: 24 }, (_, i) => `${i + 1}px ${(i + 1) * 1.5}px ${(i + 1) * 3}px rgba(0,0,0,0.${i + 3})`)
+  ] as [
+    "none", string, string, string, string, string, string, string, string, string,
+    string, string, string, string, string, string, string, string, string, string,
+    string, string, string, string, string
+  ],
+  shape: {
+    borderRadius: 8, // ✅ Correct placement under `shape`
   },
   zIndex: {
-    dropdown: 1000,
     modal: 1050,
     tooltip: 1070,
-    overlay: 1040,
   },
-};
+});
 
 export default theme;
-export {}

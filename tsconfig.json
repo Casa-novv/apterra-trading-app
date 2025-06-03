@@ -22,5 +22,5 @@
   },
   "include": [
     "src"
-, "updateGrid.js", "src/store/slices/**/*.ts", "src/store/slices/**/*.tsx"]
+  ]
 }

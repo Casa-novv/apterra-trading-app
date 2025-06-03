@@ -65,6 +65,8 @@ import RecentActivity from '../components/dashboard/RecentActivity';
 import PerformanceChart from '../components/charts/PerformanceChart';
 import SignalCard from '../components/signals/SignalCard';
 import MarketOverview from '../components/market/MarketOverview';
+import { Link } from 'react-router-dom';
+import { useMarketWebSocket } from '../hooks/useMarketWebSocket';
 
 interface DashboardMetrics {
   totalValue: number;
@@ -240,6 +242,13 @@ const Dashboard: React.FC = () => {
         )}
       </Box>
       
+      {/* Navigation Buttons */}
+      <Box display="flex" gap={2} mb={3}>
+        <Button variant="outlined" component={Link} to="/signals">Go to Signals</Button>
+        <Button variant="outlined" component={Link} to="/portfolio">Go to Portfolio</Button>
+        <Button variant="outlined" component={Link} to="/settings">Go to Settings</Button>
+      </Box>
+      
       {/* Key Metrics Cards */}
       <Grid container spacing={3} sx={{ mb: 4 }}>
         <Grid size={{ xs: 12, sm: 6, md: 3 }}>
@@ -371,7 +380,11 @@ const Dashboard: React.FC = () => {
               <LoadingSpinner message="Loading performance data..." />
             ) : (
               <PerformanceChart 
-                data={portfolioPerformance} 
+                data={
+                  typeof portfolioPerformance === 'object' && portfolioPerformance !== null
+                    ? portfolioPerformance
+                    : { labels: [], data: [] }
+                }
                 timeframe={timeframe}
                 height={320}
               />
