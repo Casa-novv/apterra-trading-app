@@ -11,10 +11,6 @@ import {
   Avatar,
   Box,
   Drawer,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
   Divider,
 } from '@mui/material';
 import {
@@ -29,14 +25,22 @@ import {
   ExitToApp,
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { RootState } from '../../store';
 import { logout } from '../../store/slices/authSlice';
-import { toggleSidebar } from '../../store/slices/uiSlice';const Header: React.FC = () => {
+import { toggleSidebar } from '../../store/slices/uiSlice';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemButton from '@mui/material/ListItemButton';
+
+const Header: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, isAuthenticated } = useSelector((state: RootState) => state.auth);
-  const notifications = useSelector((state: RootState) => state.notifications.notifications || []); 
+  const notifications = useSelector((state: RootState) => state.notifications.notifications || []);
   const sidebarOpen = useSelector((state: RootState) => state.ui?.sidebarOpen || false);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchor, setNotificationAnchor] = useState<null | HTMLElement>(null);
@@ -92,27 +96,27 @@ import { toggleSidebar } from '../../store/slices/uiSlice';const Header: React.F
 
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
             <TrendingUp sx={{ mr: 1, color: '#00d4aa', fontSize: 28 }} />
-            <Typography 
-              variant="h6" 
-              component="div" 
-              sx={{ 
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
                 fontWeight: 'bold',
                 background: 'linear-gradient(45deg, #00d4aa 30%, #ffffff 90%)',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
-                cursor: 'pointer'
+                cursor: 'pointer',
               }}
               onClick={() => navigate('/')}
             >
               APTERRA
             </Typography>
-            <Typography 
-              variant="caption" 
-              sx={{ 
-                ml: 1, 
-                color: '#00d4aa', 
+            <Typography
+              variant="caption"
+              sx={{
+                ml: 1,
+                color: '#00d4aa',
                 fontStyle: 'italic',
-                display: { xs: 'none', sm: 'block' }
+                display: { xs: 'none', sm: 'block' },
               }}
             >
               Your Intelligent Trading Companion
@@ -121,15 +125,12 @@ import { toggleSidebar } from '../../store/slices/uiSlice';const Header: React.F
 
           {isAuthenticated ? (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <IconButton 
-                color="inherit"
-                onClick={handleNotificationMenu}
-              >
+              <IconButton color="inherit" onClick={handleNotificationMenu}>
                 <Badge badgeContent={unreadNotifications} color="error">
                   <Notifications />
                 </Badge>
               </IconButton>
-              
+
               <IconButton
                 size="large"
                 aria-label="account of current user"
@@ -142,7 +143,7 @@ import { toggleSidebar } from '../../store/slices/uiSlice';const Header: React.F
                   {user?.name?.charAt(0).toUpperCase()}
                 </Avatar>
               </IconButton>
-              
+
               <Menu
                 id="menu-appbar"
                 anchorEl={anchorEl}
@@ -176,45 +177,47 @@ import { toggleSidebar } from '../../store/slices/uiSlice';const Header: React.F
                 open={Boolean(notificationAnchor)}
                 onClose={handleClose}
                 PaperProps={{
-                  sx: { width: 300, maxHeight: 400 }
+                  sx: { width: 300, maxHeight: 400 },
                 }}
               >
                 {notifications.length === 0 ? (
                   <MenuItem>No notifications</MenuItem>
                 ) : (
-                  notifications.slice(0, 5).map((notification: { id: string; message: string; timestamp: string | number | Date }) => (
-                    <MenuItem key={notification.id} onClick={handleClose}>
-                      <Box>
-                        <Typography variant="body2" fontWeight="bold">
-                          {notification.message}
-                        </Typography>
-                        <Typography variant="caption" color="text.secondary">
-                          {new Date(notification.timestamp).toLocaleTimeString()}
-                        </Typography>
-                      </Box>
-                    </MenuItem>
-                  ))
+                  notifications
+                    .slice(0, 5)
+                    .map((notification: { id: string; message: string; timestamp: string | number | Date }) => (
+                      <MenuItem key={notification.id} onClick={handleClose}>
+                        <Box>
+                          <Typography variant="body2" fontWeight="bold">
+                            {notification.message}
+                          </Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {new Date(notification.timestamp).toLocaleTimeString()}
+                          </Typography>
+                        </Box>
+                      </MenuItem>
+                    ))
                 )}
               </Menu>
             </Box>
           ) : (
             <Box>
-              <Button 
-                color="inherit" 
+              <Button
+                color="inherit"
                 onClick={() => navigate('/login')}
                 sx={{ mr: 1 }}
               >
                 Login
               </Button>
-              <Button 
+              <Button
                 variant="outlined"
-                sx={{ 
-                  color: '#00d4aa', 
+                sx={{
+                  color: '#00d4aa',
                   borderColor: '#00d4aa',
                   '&:hover': {
                     backgroundColor: '#00d4aa',
-                    color: '#1a1a2e'
-                  }
+                    color: '#1a1a2e',
+                  },
                 }}
                 onClick={() => navigate('/register')}
               >
@@ -246,23 +249,23 @@ import { toggleSidebar } from '../../store/slices/uiSlice';const Header: React.F
         <Divider sx={{ borderColor: '#333' }} />
         <List>
           {menuItems.map((item) => (
-            <ListItem 
-              component="div"
-              key={item.text}
-              onClick={() => handleNavigation(item.path)}
-              sx={{
-                '&:hover': {
-                  backgroundColor: '#00d4aa20',
-                },
-                cursor: 'pointer'
-              }}
-            >
-              <ListItemIcon sx={{ color: '#00d4aa' }}>
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItem>
-          ))}        </List>
+            <ListItem disablePadding key={item.text}>
+             <ListItemButton
+               onClick={() => handleNavigation(item.path)}
+               selected={location.pathname === item.path}
+               sx={{
+                 '&:hover': { backgroundColor: '#00d4aa20' },
+                 backgroundColor: location.pathname === item.path ? '#00d4aa30' : 'inherit',
+                 cursor: 'pointer',
+               }}
+             >
+                <ListItemIcon sx={{ color: '#00d4aa' }}>{item.icon}</ListItemIcon>
+                <ListItemText primary={item.text} />
+             </ListItemButton>
+           </ListItem>
+
+          ))}
+        </List>
       </Drawer>
     </>
   );
