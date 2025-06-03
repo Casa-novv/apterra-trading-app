@@ -24,12 +24,12 @@ import Settings from './pages/Settings';
 // Auth actions
 import { checkAuthStatus } from './store/slices/authSlice';
 
+// Custom Hook for WebSocket
+import { useMarketWebSocket } from './hooks/useMarketWebSocket';
+
 // WebSocket connection
-const ws = new WebSocket('ws://localhost:5000');
-ws.onmessage = (event) => {
-  const data = JSON.parse(event.data);
-  console.log(data);
-};
+const wsUrl = 'ws://localhost:5000';
+const marketData = useMarketWebSocket(wsUrl);
 
 // 🔹 Authentication Wrapper Components
 const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -118,3 +118,4 @@ const App: React.FC = () => {
 };
 
 export default App;
+

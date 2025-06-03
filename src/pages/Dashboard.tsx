@@ -470,7 +470,7 @@ const Dashboard: React.FC = () => {
             {marketLoading ? (
               <LoadingSpinner message="Loading market data..." />
             ) : (
-              <MarketOverview data={watchlistData} compact />
+              <MarketOverview data={Object.values(marketData)} compact />
             )}
           </Paper>
         </Grid>
